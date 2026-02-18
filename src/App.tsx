@@ -1,22 +1,22 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Header from './components/Header';
 import About from './components/About';
 import Projects from './components/Projects';
 import Footer from './components/Footer';
 
 function App() {
-  const [darkMode, setDarkMode] = useState(false);
-
-  useEffect(() => {
-    // Check for saved theme preference or default to light mode
+  const [darkMode, setDarkMode] = useState(() => {
+    // Initialize state from localStorage or system preference
     const savedTheme = localStorage.getItem('theme');
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    const isDark = savedTheme === 'dark' || (!savedTheme && prefersDark);
     
-    if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
-      setDarkMode(true);
+    if (isDark) {
       document.documentElement.classList.add('dark');
     }
-  }, []);
+    
+    return isDark;
+  });
 
   const toggleDarkMode = () => {
     setDarkMode(!darkMode);
