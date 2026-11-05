@@ -8,10 +8,12 @@ type Props = {
   size?: "sm" | "lg";
   /** When provided, the card renders as a button (grid). Otherwise a static panel (modal). */
   onOpen?: () => void;
+  /** When provided (and no onOpen), the card renders as a link that opens in a new tab (modal). */
+  href?: string;
   titleId?: string;
 };
 
-export function ProjectCard({ project, size = "sm", onOpen, titleId }: Props) {
+export function ProjectCard({ project, size = "sm", onOpen, href, titleId }: Props) {
   const { imageFit } = project;
   const imgStyle: CSSProperties =
     typeof imageFit === "string"
@@ -79,6 +81,23 @@ export function ProjectCard({ project, size = "sm", onOpen, titleId }: Props) {
       >
         {body}
       </button>
+    );
+  }
+
+  if (href) {
+    return (
+      <a
+        className={`${className} card--link`}
+        style={style}
+        href={href}
+        target="_blank"
+        rel="noreferrer"
+        draggable={false}
+        // Mouse/touch shortcut only: the modal's "Demo" button is the keyboard path to the same link.
+        tabIndex={-1}
+      >
+        {body}
+      </a>
     );
   }
 

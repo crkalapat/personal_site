@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type PointerEvent } from "react";
 import type { Project } from "../data/projects";
 import { ProjectCard } from "./ProjectCard";
 import closeIcon from "../assets/icons/close.svg";
@@ -21,7 +21,22 @@ const FLY_BACK_MS = 680;
 const LAND_FADE_MS = 140;
 const NO_SHADOW = "0 0 0 0 rgba(0, 0, 0, 0)";
 
+/** Max card tilt (degrees) when the cursor is at an edge. */
+const MAX_TILT = 10;
+
 const prefersReducedMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+/** Tilt/shine is a desktop nicety: needs a real hovering mouse, and motion allowed. */
+const canTilt = () => window.matchMedia("(hover: hover) and (pointer: fine)").matches && !prefersReducedMotion();
+
+const clamp01 = (n: number) => Math.min(1, Math.max(0, n));
+
+function resetTilt(el: HTMLElement | null) {
+  if (!el) return;
+  el.classList.remove("is-tilting");
+  el.style.setProperty("--rx", "0deg");
+  el.style.setProperty("--ry", "0deg");
+}
 
 /**
  * Nudge the modal content by a sub-pixel amount so the flyer sits at the same fractional pixel
@@ -58,6 +73,7 @@ function placeOver(from: DOMRect, to: DOMRect, extra = "") {
 export function ProjectModal({ project, getOrigin, onStep, onClosed }: Props) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const flyerRef = useRef<HTMLDivElement>(null);
+  const tiltRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const closingRef = useRef(false);
   const firstIdRef = useRef(project.id);
@@ -112,6 +128,7 @@ export function ProjectModal({ project, getOrigin, onStep, onClosed }: Props) {
     if (closingRef.current) return;
     closingRef.current = true;
     setPhase("closing");
+    resetTilt(tiltRef.current);
 
     const flyer = flyerRef.current;
     const slot = getOrigin(project.id);
@@ -158,6 +175,21 @@ export function ProjectModal({ project, getOrigin, onStep, onClosed }: Props) {
     return () => window.removeEventListener("keydown", onKey);
   }, [onStep]);
 
+  // Desktop: the card leans away from the cursor (like pressing an edge) and a dull glare follows it.
+  // Measured on the flyer, which isn't rotated, so the hit area doesn't wobble as the card tilts.
+  const onTiltMove = (e: PointerEvent<HTMLDivElement>) => {
+    const tilt = tiltRef.current;
+    if (!tilt || e.pointerType !== "mouse" || closingRef.current || !canTilt()) return;
+    const r = e.currentTarget.getBoundingClientRect();
+    const x = clamp01((e.clientX - r.left) / r.width);
+    const y = clamp01((e.clientY - r.top) / r.height);
+    tilt.classList.add("is-tilting");
+    tilt.style.setProperty("--rx", `${(0.5 - y) * 2 * MAX_TILT}deg`);
+    tilt.style.setProperty("--ry", `${(x - 0.5) * 2 * MAX_TILT}deg`);
+    tilt.style.setProperty("--mx", `${x * 100}%`);
+    tilt.style.setProperty("--my", `${y * 100}%`);
+  };
+
   // Only links that exist get a button — no greyed-out placeholders.
   const actions = [
     { label: "Demo", href: project.demoUrl },
@@ -190,8 +222,16 @@ export function ProjectModal({ project, getOrigin, onStep, onClosed }: Props) {
             <img src={closeIcon} alt="" />
           </button>
 
-          <div ref={flyerRef} className="modal__flyer" style={{ "--s": scale } as CSSProperties}>
-            <ProjectCard project={project} size="lg" titleId={titleId} />
+          <div
+            ref={flyerRef}
+            className="modal__flyer"
+            style={{ "--s": scale } as CSSProperties}
+            onPointerMove={onTiltMove}
+            onPointerLeave={() => resetTilt(tiltRef.current)}
+          >
+            <div ref={tiltRef} className="modal__tilt">
+              <ProjectCard project={project} size="lg" href={project.demoUrl} titleId={titleId} />
+            </div>
           </div>
 
           {actions.length > 0 && (

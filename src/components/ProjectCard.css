@@ -149,6 +149,12 @@
   color: #8f9aa6;
 }
 
+/* The enlarged modal card links to the project's demo. */
+.card--link {
+  cursor: pointer;
+  text-decoration: none;
+}
+
 /* Grid cards are buttons that open the detail modal. */
 .card--interactive {
   cursor: pointer;
