@@ -1,8 +1,13 @@
 /*
- * Trading-card style project card. All geometry is expressed in "--u" units so the
- * same card renders at 250×350 in the grid and 385×539 (×1.54) in the modal,
- * exactly like the Figma frames.
+ * Trading-card style project card, 250×--card-h, matching the Figma frames.
+ * Geometry is expressed in "--u" units. The modal shows this exact same layout
+ * scaled up with a transform, so the card looks identical when it flies back into the grid.
  */
+:root {
+  /* Card height in design px. Grown from the Figma 350 to fit 14px body text. */
+  --card-h: 390;
+}
+
 .card {
   --u: 1px;
   position: relative;
@@ -10,7 +15,7 @@
   flex: none;
   box-sizing: border-box;
   width: calc(250 * var(--u));
-  height: calc(350 * var(--u));
+  height: calc(var(--card-h) * var(--u));
   padding: 0;
   border: calc(10 * var(--u)) solid var(--card-border);
   border-radius: calc(12.5 * var(--u));
@@ -20,10 +25,6 @@
   font: inherit;
   text-align: left;
   overflow: hidden;
-}
-
-.card--lg {
-  --u: 1.54px;
 }
 
 .card__header {
@@ -108,8 +109,44 @@
   top: calc(200 * var(--u));
   left: calc(12 * var(--u));
   width: calc(206 * var(--u));
-  font-size: calc(12 * var(--u));
+  font-size: calc(14 * var(--u));
   line-height: normal;
+}
+
+/* Award: a little sticker slapped on the bottom-right corner of the photo frame. */
+.card__award {
+  position: absolute;
+  right: calc(-6 * var(--u));
+  bottom: calc(-11 * var(--u));
+  z-index: 1;
+  padding: calc(3 * var(--u)) calc(8 * var(--u));
+  border: calc(1.5 * var(--u)) solid var(--frame-border);
+  border-radius: 999px;
+  background: #fff;
+  box-shadow: 0 calc(2 * var(--u)) calc(4 * var(--u)) rgba(0, 0, 0, 0.25);
+  color: var(--ink);
+  font-size: calc(10.5 * var(--u));
+  font-weight: 700;
+  line-height: normal;
+  white-space: nowrap;
+  transform: rotate(-3deg);
+  display: flex;
+  align-items: center;
+  gap: calc(4 * var(--u));
+}
+
+.card__award-icon {
+  flex: none;
+  width: calc(10 * var(--u));
+  height: calc(10 * var(--u));
+}
+
+.card__award-icon--gold {
+  color: #e0a21b;
+}
+
+.card__award-icon--silver {
+  color: #8f9aa6;
 }
 
 /* Grid cards are buttons that open the detail modal. */

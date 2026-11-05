@@ -43,15 +43,26 @@
   align-items: center;
 }
 
+/*
+ * The flyer reserves the enlarged card's space; the card inside keeps its normal 250px layout
+ * and is scaled by --s (set from JS to fit the viewport). Same layout as the grid card means
+ * no border/sticker "snap" when it flies back into its slot.
+ */
 .modal__flyer {
+  --s: 1.54;
+  position: relative;
+  width: calc(250px * var(--s));
+  height: calc(var(--card-h) * 1px * var(--s));
   transform-origin: center;
-  will-change: transform;
 }
 
-/* Shrink the ×1.54 card on small or short viewports so the whole modal stays visible. */
-.modal .card--lg {
-  --u: min(1.54px, calc((100vw - 48px) / 250), calc((100dvh - 210px) / 350));
-  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
+.modal__flyer > .card {
+  position: absolute;
+  top: 0;
+  left: 0;
+  transform: scale(var(--s));
+  transform-origin: 0 0;
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35);
 }
 
 /* Close button + action buttons fade in once the card has landed, and out first on close. */

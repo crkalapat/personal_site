@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from "react";
 import type { Project } from "../data/projects";
 import { ProjectCard } from "./ProjectCard";
 import closeIcon from "../assets/icons/close.svg";
@@ -18,8 +18,31 @@ type Phase = "opening" | "open" | "closing";
 
 const FLY_OUT_MS = 820;
 const FLY_BACK_MS = 680;
+const LAND_FADE_MS = 140;
+const NO_SHADOW = "0 0 0 0 rgba(0, 0, 0, 0)";
 
 const prefersReducedMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+/**
+ * Nudge the modal content by a sub-pixel amount so the flyer sits at the same fractional pixel
+ * offset as the grid slot. Then the fly-back moves by whole pixels and lands exactly on the
+ * grid card's pixels (no half-pixel shimmer when they swap).
+ */
+function alignToSlot(content: HTMLElement, flyer: HTMLElement, slot: HTMLElement) {
+  const frac = (n: number) => n - Math.floor(n);
+  content.style.left = "0px";
+  content.style.top = "0px";
+  const f = flyer.getBoundingClientRect();
+  const s = slot.getBoundingClientRect();
+  content.style.left = `${frac(s.left) - frac(f.left)}px`;
+  content.style.top = `${frac(s.top) - frac(f.top)}px`;
+}
+
+/** How much to enlarge the card: ×1.54 (the Figma modal), shrunk to fit small or short screens. */
+function modalScale() {
+  const cardH = parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--card-h")) || 390;
+  return Math.min(1.54, (window.innerWidth - 48) / 250, (window.innerHeight - 210) / cardH);
+}
 
 /**
  * Transform that makes `el` (at its natural position `to`) appear exactly over `from`.
@@ -35,10 +58,18 @@ function placeOver(from: DOMRect, to: DOMRect, extra = "") {
 export function ProjectModal({ project, getOrigin, onStep, onClosed }: Props) {
   const dialogRef = useRef<HTMLDialogElement>(null);
   const flyerRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
   const closingRef = useRef(false);
   const firstIdRef = useRef(project.id);
   const [phase, setPhase] = useState<Phase>("opening");
+  const [scale, setScale] = useState(modalScale);
   const titleId = `project-title-${project.id}`;
+
+  useEffect(() => {
+    const onResize = () => setScale(modalScale());
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, []);
 
   // Open: show the dialog, then fly the card from its grid slot to the center ("pick it up").
   useLayoutEffect(() => {
@@ -50,21 +81,21 @@ export function ProjectModal({ project, getOrigin, onStep, onClosed }: Props) {
 
     // Measure the card's resting spot without any in-flight animation applied
     // (React StrictMode runs this effect twice in development).
+    const card = flyer.querySelector<HTMLElement>(".card");
     flyer.getAnimations().forEach((a) => a.cancel());
+    card?.getAnimations().forEach((a) => a.cancel());
     const slot = getOrigin(project.id);
     if (slot && !prefersReducedMotion()) {
+      if (contentRef.current) alignToSlot(contentRef.current, flyer, slot);
       const from = slot.getBoundingClientRect();
       const to = flyer.getBoundingClientRect();
       // If the card was mid-hover (lifted + tilted), start from that pose so there's no jump.
       const hovered = slot.querySelector(".card:hover");
       const tilt = hovered ? `translateY(-6px) rotate(${slot.matches(":nth-child(even)") ? 1 : -1}deg)` : "";
-      flyer.animate(
-        [
-          { transform: placeOver(from, to, tilt), boxShadow: "0 0 0 rgba(0,0,0,0)" },
-          { transform: "none" },
-        ],
-        { duration: FLY_OUT_MS, easing: "cubic-bezier(0.4, 0, 0.2, 1)" },
-      );
+      const timing = { duration: FLY_OUT_MS, easing: "cubic-bezier(0.4, 0, 0.2, 1)" };
+      flyer.animate([{ transform: placeOver(from, to, tilt) }, { transform: "none" }], timing);
+      // The drop shadow grows in as the card lifts off the grid.
+      if (card) card.animate([{ boxShadow: NO_SHADOW }, { boxShadow: getComputedStyle(card).boxShadow }], timing);
     }
     const raf = requestAnimationFrame(() => setPhase("open"));
 
@@ -88,15 +119,22 @@ export function ProjectModal({ project, getOrigin, onStep, onClosed }: Props) {
       window.setTimeout(onClosed, 150);
       return;
     }
+    const card = flyer.querySelector<HTMLElement>(".card");
     flyer.getAnimations().forEach((a) => a.cancel());
+    card?.getAnimations().forEach((a) => a.cancel());
+    if (contentRef.current) alignToSlot(contentRef.current, flyer, slot);
     const to = flyer.getBoundingClientRect();
     const from = slot.getBoundingClientRect();
-    const anim = flyer.animate([{ transform: "none" }, { transform: placeOver(from, to) }], {
-      duration: FLY_BACK_MS,
-      easing: "cubic-bezier(0.4, 0, 0.2, 1)",
-      fill: "forwards",
-    });
-    anim.onfinish = onClosed;
+    const timing = { duration: FLY_BACK_MS, easing: "cubic-bezier(0.4, 0, 0.2, 1)", fill: "forwards" as const };
+    const anim = flyer.animate([{ transform: "none" }, { transform: placeOver(from, to) }], timing);
+    // Shadow fades as it's set down, so nothing extra is left around the edges on landing.
+    if (card) card.animate([{ boxShadow: getComputedStyle(card).boxShadow }, { boxShadow: NO_SHADOW }], timing);
+    anim.onfinish = () => {
+      // Landed: reveal the real grid card underneath and cross-fade the flyer away, so tiny
+      // rasterization differences (thin borders, the award sticker) blend instead of snapping.
+      slot.style.visibility = "visible";
+      flyer.animate([{ opacity: 1 }, { opacity: 0 }], { duration: LAND_FADE_MS, fill: "forwards" }).onfinish = onClosed;
+    };
   }, [getOrigin, onClosed, project.id]);
 
   // Arrow keys flip through projects; give the new card a little pop.
@@ -120,7 +158,12 @@ export function ProjectModal({ project, getOrigin, onStep, onClosed }: Props) {
     return () => window.removeEventListener("keydown", onKey);
   }, [onStep]);
 
-  const { demo, github } = project.links;
+  // Only links that exist get a button — no greyed-out placeholders.
+  const actions = [
+    { label: "Demo", href: project.demoUrl },
+    { label: "GitHub", href: project.repoUrl },
+    { label: "Write-up", href: project.writeupUrl },
+  ].filter((a): a is { label: string; href: string } => Boolean(a.href));
 
   return (
     <dialog
@@ -142,37 +185,27 @@ export function ProjectModal({ project, getOrigin, onStep, onClosed }: Props) {
     >
       <div className="modal__scrim" />
       <div className="modal__stage">
-        <div className="modal__content">
+        <div ref={contentRef} className="modal__content">
           <button type="button" className="modal__close modal__chrome" onClick={close} aria-label="Close">
             <img src={closeIcon} alt="" />
           </button>
 
-          <div ref={flyerRef} className="modal__flyer">
+          <div ref={flyerRef} className="modal__flyer" style={{ "--s": scale } as CSSProperties}>
             <ProjectCard project={project} size="lg" titleId={titleId} />
           </div>
 
-          <div className="modal__actions modal__chrome">
-            <ActionButton label="Demo" href={demo} />
-            <ActionButton label="GitHub" href={github} />
-          </div>
+          {actions.length > 0 && (
+            <div className="modal__actions modal__chrome">
+              {actions.map(({ label, href }) => (
+                <a key={label} className="pill-button" href={href} target="_blank" rel="noreferrer">
+                  {label}
+                </a>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </dialog>
   );
 }
 
-function ActionButton({ label, href }: { label: string; href?: string }) {
-  if (href) {
-    return (
-      <a className="pill-button" href={href} target="_blank" rel="noreferrer">
-        {label}
-      </a>
-    );
-  }
-  // No link yet: keep the button in the layout, but make it clearly inactive.
-  return (
-    <span className="pill-button pill-button--disabled" aria-disabled="true" title="Link coming soon">
-      {label}
-    </span>
-  );
-}

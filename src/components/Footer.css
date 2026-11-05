@@ -12,6 +12,8 @@
   margin: 0;
   color: var(--icon-muted-hover);
   font-size: 16px;
+  /* Kulim Park's space is very wide at small sizes; same tightening as the pill buttons. */
+  word-spacing: -0.1em;
 }
 
 .site-social {

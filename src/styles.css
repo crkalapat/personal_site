@@ -46,6 +46,9 @@ html.scroll-locked {
   width: 100%;
   max-width: 842px;
   margin: 0 auto;
+  /* Center on a whole pixel (plain auto margins can land on x.5), so the project cards sit on
+     whole pixels and the modal card can land back on them exactly. Older browsers keep auto. */
+  margin-left: max(0px, round(down, (100% - 842px) / 2, 1px));
   padding: 216px 0 48px;
 }
 
@@ -78,6 +81,8 @@ html.scroll-locked {
   line-height: normal;
   text-decoration: none;
   white-space: nowrap;
+  /* Kulim Park's space is very wide; tighten it so multi-word labels read as one phrase. */
+  word-spacing: -0.1em;
   transition:
     transform 160ms ease,
     background-color 160ms ease,
@@ -116,17 +121,6 @@ html.scroll-locked {
   box-shadow: none;
   transform: none;
   transition-duration: 500ms;
-}
-
-.pill-button--disabled {
-  opacity: 0.45;
-  cursor: not-allowed;
-}
-
-.pill-button--disabled:hover {
-  background: var(--button);
-  transform: none;
-  box-shadow: none;
 }
 
 .pill-button__arrow {

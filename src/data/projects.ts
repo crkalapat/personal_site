@@ -1,9 +1,9 @@
-import tesseractImg from "../assets/projects/tesseract.png";
-import keystrokeImg from "../assets/projects/keystroke.png";
-import spellboardImg from "../assets/projects/spellboard.png";
-import fuseImg from "../assets/projects/fuse.png";
-import smartKnobImg from "../assets/projects/smart-knob.png";
-import compressionImg from "../assets/projects/compression.png";
+import tesseractImg from "../assets/projects/tesseract.webp";
+import keystrokeImg from "../assets/projects/keystroke.webp";
+import spellboardImg from "../assets/projects/spellboard.webp";
+import fuseImg from "../assets/projects/fuse.webp";
+import smartKnobImg from "../assets/projects/smart-knob.webp";
+import compressionImg from "../assets/projects/compression.webp";
 
 import badgeTesseract from "../assets/icons/badge-tesseract.svg";
 import badgeKeystroke from "../assets/icons/badge-keystroke.svg";
@@ -33,6 +33,8 @@ export type Project = {
   date: string;
   description: string;
   image: string;
+  /** Intrinsic pixel size of the image file (for width/height attributes). */
+  imageSize: [number, number];
   imageAlt: string;
   imageFit: ImageFit;
   /** Card background: radial gradient color stops [color, offset 0–1]. */
@@ -40,7 +42,15 @@ export type Project = {
   badge: string;
   icon: string;
   iconLabel: string;
-  links: { demo?: string; github?: string };
+  /**
+   * Shown as a small sticker on the card. The icon is a vector (not an emoji) so it stays
+   * crisp while the card scales in and out of the modal.
+   */
+  award?: { icon: "trophy" | "silver"; label: string };
+  /** Outbound links. Each button in the modal only renders when its URL is set. */
+  demoUrl?: string;
+  repoUrl?: string;
+  writeupUrl?: string;
 };
 
 export const GITHUB_PROFILE = "https://github.com/crkalapat/";
@@ -51,8 +61,9 @@ export const projects: Project[] = [
     title: "Tesseract",
     date: "11.2026",
     description:
-      "Tesseract is an open-source AI smart speaker I designed and built, from the custom PCB to the 3D-printed case. Wake word detection runs on a Raspberry Pi Zero 2W, and a fast model answers simple questions while a stronger model handles harder tasks.",
+      "Tesseract is an open-source AI smart speaker I designed and built, from the custom PCB to the 3D-printed case. Say the wake word and it plays music, answers questions, or hands harder tasks to my AI agent, like adding deadlines to my calendar.",
     image: tesseractImg,
+    imageSize: [1200, 910],
     imageAlt:
       "Tesseract, a black cube-shaped smart speaker with a small clock display",
     imageFit: { width: 100.03, height: 105.71, left: -0.02, top: 0 },
@@ -67,10 +78,7 @@ export const projects: Project[] = [
     badge: badgeTesseract,
     icon: iconAiTesseract,
     iconLabel: "AI",
-    // TODO: add real links
-    links: {
-      github: "https://github.com/crkalapat/tesseract",
-    },
+    repoUrl: "https://github.com/crkalapat/tesseract",
   },
   {
     id: "keystroke",
@@ -79,6 +87,7 @@ export const projects: Project[] = [
     description:
       "Keystroke is a mini piano arcade game inspired by Grand Piano Keys, built in 72 hours at a San Francisco hardware hackathon and one of five winning projects. I came up with the idea and designed the gameplay, modeled the arcade cabinet in CAD, and directed AI to write the code.",
     image: keystrokeImg,
+    imageSize: [1024, 768],
     imageAlt: "Keystroke, a small arcade cabinet with a screen and piano keys",
     imageFit: "fill",
     gradient: [
@@ -89,10 +98,9 @@ export const projects: Project[] = [
     badge: badgeKeystroke,
     icon: iconGame,
     iconLabel: "Game",
-    links: {
-      demo: "https://youtu.be/X3vovd0zBho",
-      github: "https://github.com/hephaestushex/keystroke",
-    },
+    award: { icon: "trophy", label: "Hack Club Outpost Winner" },
+    demoUrl: "https://youtu.be/X3vovd0zBho",
+    repoUrl: "https://github.com/hephaestushex/keystroke",
   },
   {
     id: "spellboard",
@@ -101,6 +109,7 @@ export const projects: Project[] = [
     description:
       "Spellboard is a large, custom keyboard I built for my brother, who spells by pointing to letters. It keeps his letterboard’s alphabetical layout but types straight into a computer, using QMK firmware and a 3D-printed case. I shared units with two communication centers to try.",
     image: spellboardImg,
+    imageSize: [1200, 900],
     imageAlt:
       "Spellboard, a black keyboard with large alphabetically ordered keys",
     imageFit: "cover",
@@ -112,10 +121,8 @@ export const projects: Project[] = [
     badge: badgeSpellboard,
     icon: iconHardware,
     iconLabel: "Hardware",
-    links: {
-      demo: "https://github.com/user-attachments/assets/92936077-01a1-442b-ba66-4622e2b436ea",
-      github: "https://github.com/crkalapat/spellboard",
-    },
+    demoUrl: "https://github.com/user-attachments/assets/92936077-01a1-442b-ba66-4622e2b436ea",
+    repoUrl: "https://github.com/crkalapat/spellboard",
   },
   {
     id: "fuse",
@@ -124,6 +131,7 @@ export const projects: Project[] = [
     description:
       "Fuse is an AI circuit analyzer. Snap a photo of a breadboard, and a custom-trained YOLOv11 model finds the parts while GPT explains the circuit and suggests fixes. Built with a teammate at HackMIT Blueprint 2025, where it won 2nd place. I built the front end and pitched the demo.",
     image: fuseImg,
+    imageSize: [1000, 1000],
     imageAlt:
       "A breadboard circuit with resistors detected and labeled by Fuse",
     imageFit: "fill",
@@ -135,10 +143,9 @@ export const projects: Project[] = [
     badge: badgeFuse,
     icon: iconAiFuse,
     iconLabel: "AI",
-    links: {
-      demo: "https://www.youtube.com/watch?v=rEFft3jJLJg&pp=0gcJCSkMAYcqIYzv",
-      github: "https://github.com/crkalapat/fuse",
-    },
+    award: { icon: "silver", label: "2nd place, HackMIT Blueprint" },
+    demoUrl: "https://www.youtube.com/watch?v=rEFft3jJLJg",
+    repoUrl: "https://github.com/crkalapat/fuse",
   },
   {
     id: "smart-knob",
@@ -147,6 +154,7 @@ export const projects: Project[] = [
     description:
       "Smart Knob is a motorized add-on that locks a regular door knob and works with Alexa and Google Home through Matter. It was my first hardware project. I designed the 3D-printed housing, programmed it in C++ using Matter’s example code, and showed it at Open Sauce 2026.",
     image: smartKnobImg,
+    imageSize: [1024, 768],
     imageAlt: "Smart Knob, a 3D-printed motor housing mounted on a door knob",
     imageFit: "fill",
     gradient: [
@@ -160,10 +168,8 @@ export const projects: Project[] = [
     badge: badgeSmartKnob,
     icon: iconHardware,
     iconLabel: "Hardware",
-    links: {
-      demo: "https://github.com/user-attachments/assets/36e633b3-c66b-4fb2-a72d-89f20589ac2b",
-      github: "https://github.com/crkalapat/smart-door-knob",
-    },
+    demoUrl: "https://github.com/user-attachments/assets/36e633b3-c66b-4fb2-a72d-89f20589ac2b",
+    repoUrl: "https://github.com/crkalapat/smart-door-knob",
   },
   {
     id: "compression",
@@ -172,6 +178,7 @@ export const projects: Project[] = [
     description:
       "Compression is a multiplayer combat game you play in the browser by stomping on opponents. My team built it at HackMIT Blueprint 2024, my first hackathon. I set up the project and build tools, and wrote the player controls for the game to receive user input.",
     image: compressionImg,
+    imageSize: [926, 698],
     imageAlt:
       "Compression gameplay: two square characters on a grassy platform",
     imageFit: { width: 118.41, height: 125.09, left: -18.41, top: -16.37 },
@@ -184,10 +191,8 @@ export const projects: Project[] = [
     badge: badgeCompression,
     icon: iconGame,
     iconLabel: "Game",
-    links: {
-      demo: "https://plutolotyl.itch.io/blueprint-demo-2",
-      github: "https://github.com/crkalapat/compression",
-    },
+    demoUrl: "https://plutolotyl.itch.io/blueprint-demo-2",
+    repoUrl: "https://github.com/crkalapat/compression",
   },
 ];
 

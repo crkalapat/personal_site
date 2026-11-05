@@ -1,4 +1,5 @@
 import type { CSSProperties } from "react";
+import { FaMedal, FaTrophy } from "react-icons/fa";
 import { gradientCss, type Project } from "../data/projects";
 import "./ProjectCard.css";
 
@@ -36,8 +37,28 @@ export function ProjectCard({ project, size = "sm", onOpen, titleId }: Props) {
       </span>
       <span className="card__frame">
         <span className="card__media">
-          <img src={project.image} alt={project.imageAlt} style={imgStyle} draggable={false} />
+          <img
+            src={project.image}
+            alt={project.imageAlt}
+            width={project.imageSize[0]}
+            height={project.imageSize[1]}
+            // Grid cards lazy-load; the modal copy reuses the already-cached file.
+            loading={size === "sm" ? "lazy" : "eager"}
+            decoding="async"
+            style={imgStyle}
+            draggable={false}
+          />
         </span>
+        {project.award && (
+          <span className="card__award">
+            {project.award.icon === "trophy" ? (
+              <FaTrophy className="card__award-icon card__award-icon--gold" aria-hidden="true" />
+            ) : (
+              <FaMedal className="card__award-icon card__award-icon--silver" aria-hidden="true" />
+            )}
+            {project.award.label}
+          </span>
+        )}
       </span>
       <span className="card__desc">{project.description}</span>
     </>
@@ -53,7 +74,7 @@ export function ProjectCard({ project, size = "sm", onOpen, titleId }: Props) {
         className={`${className} card--interactive`}
         style={style}
         onClick={onOpen}
-        aria-label={`${project.title}, ${project.date}. Open details`}
+        aria-label={[project.title, project.date, project.award?.label, "Open details"].filter(Boolean).join(". ")}
         aria-haspopup="dialog"
       >
         {body}

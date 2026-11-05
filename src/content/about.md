@@ -1,3 +1,3 @@
-Hi! I'm currently a freshman at Texas A&M University studying Computer Science. I really like building whatever interests me, whether that's PCBs, websites, games, AI applications, or a door knob. Usually my projects today involve some mixture of hardware and software. You can find a bunch of my favorite projects that I've worked on over the years in the Projects tab.
+Hi! I'm Charlie, a CS freshman at Texas A&M. I like building things of all shapes and sizes, whether it's AI apps, PCBs, games, firmware, a keyboard for my brother, or even a smart door knob. Most of my latest projects mix hardware and software.
 
-**Right Now:** I'm working on [Tesseract](https://github.com/crkalapat/tesseract), an open-source smart speaker that lets you control your AI agent (like Hermes) with your voice.
+**Right Now:** I'm exploring personal AI agents and new ways to interact with them. I'm improving the software for [Tesseract](https://github.com/crkalapat/tesseract), an open-source smart speaker that gives your AI agent a voice. Both the hardware and software work, and I talk to Tesseract practically every day, fixing bugs when I find them or adding new features.
