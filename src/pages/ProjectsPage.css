@@ -1,0 +1,19 @@
+.projects__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, 250px);
+  justify-content: space-between;
+  gap: 39px 38px;
+  margin-top: 28px;
+}
+
+.projects__more {
+  display: flex;
+  justify-content: center;
+  margin-top: 64px;
+}
+
+@media (max-width: 880px) {
+  .projects__grid {
+    justify-content: center;
+  }
+}

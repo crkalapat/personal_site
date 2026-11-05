@@ -1,0 +1,123 @@
+.modal {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--ink);
+  overflow: auto;
+}
+
+/* The dim layer is our own element (not ::backdrop) so it can fade out on close too. */
+.modal::backdrop {
+  background: transparent;
+}
+
+.modal__scrim {
+  position: fixed;
+  inset: 0;
+  background: var(--scrim);
+  opacity: 0;
+  transition: opacity 500ms ease;
+}
+
+.modal__stage {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100%;
+  padding: 72px 24px 40px;
+  box-sizing: border-box;
+}
+
+.modal__content {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.modal__flyer {
+  transform-origin: center;
+  will-change: transform;
+}
+
+/* Shrink the ×1.54 card on small or short viewports so the whole modal stays visible. */
+.modal .card--lg {
+  --u: min(1.54px, calc((100vw - 48px) / 250), calc((100dvh - 210px) / 350));
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
+}
+
+/* Close button + action buttons fade in once the card has landed, and out first on close. */
+.modal__chrome {
+  opacity: 0;
+  transition: opacity 200ms ease;
+}
+
+.modal[data-phase="open"] .modal__scrim {
+  opacity: 1;
+}
+
+.modal[data-phase="open"] .modal__chrome {
+  opacity: 1;
+  transition-delay: 650ms;
+  transition-duration: 300ms;
+}
+
+.modal[data-phase="closing"] .modal__scrim {
+  transition-duration: 650ms;
+}
+
+.modal[data-phase="closing"] .modal__chrome {
+  transition-duration: 180ms;
+}
+
+.modal__close {
+  position: absolute;
+  top: -44px;
+  right: -46px;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.modal__close img {
+  display: block;
+  width: 32px;
+  height: 32px;
+  transition: filter 160ms ease;
+}
+
+/* Just a slight colour shift on hover — white → light grey. */
+.modal__close:hover img {
+  filter: brightness(0.75);
+}
+
+.modal__close:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+.modal__actions {
+  display: flex;
+  gap: 26px;
+  margin-top: 34px;
+}
+
+@media (max-width: 560px) {
+  .modal__close {
+    position: fixed;
+    top: 16px;
+    right: 16px;
+  }
+}

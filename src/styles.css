@@ -1,0 +1,188 @@
+:root {
+  /* Design tokens from the Figma file */
+  --ink: #000;
+  --paper: #fff;
+  --card-border: #d7d7d7;
+  --frame-border: #989898;
+  --accent: #0064de;
+  --button: #000;
+  --button-hover: #2b2b2b;
+  --button-receded: #bdbdbd;
+  --icon-muted: #c2c2c2;
+  --icon-muted-hover: #8c8c8c;
+  --rule: #e6e6e6;
+  --scrim: rgba(0, 0, 0, 0.7);
+
+  font-family: "Kulim Park", system-ui, sans-serif;
+  font-weight: 400;
+  color: var(--ink);
+  background: var(--paper);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+}
+
+img {
+  display: block;
+}
+
+html {
+  /* Keep layout stable when the modal locks scrolling (cards fly back to exact slots). */
+  scrollbar-gutter: stable;
+}
+
+html.scroll-locked {
+  overflow: hidden;
+}
+
+.page {
+  width: 100%;
+  max-width: 842px;
+  margin: 0 auto;
+  padding: 216px 0 48px;
+}
+
+.page__main {
+  margin-top: 39px;
+  animation: page-in 280ms ease-out;
+}
+
+.section-title {
+  margin: 0;
+  font-size: 32px;
+  font-weight: 700;
+  line-height: normal;
+}
+
+/* Rounded pill button (Figma: Demo / GitHub), in black */
+.pill-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  min-width: 141px;
+  height: 52px;
+  padding: 0 24px;
+  border-radius: 15px;
+  background: var(--button);
+  color: #fff;
+  font-size: 24px;
+  font-weight: 700;
+  line-height: normal;
+  text-decoration: none;
+  white-space: nowrap;
+  transition:
+    transform 160ms ease,
+    background-color 160ms ease,
+    box-shadow 160ms ease;
+}
+
+.pill-button:hover {
+  background: var(--button-hover);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.25);
+}
+
+.pill-button:active {
+  transform: translateY(0);
+}
+
+.pill-button:focus-visible {
+  outline: 3px solid #fff;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 6px var(--button);
+}
+
+.pill-button--small {
+  min-width: 0;
+  height: 40px;
+  padding: 0 18px;
+  gap: 8px;
+  border-radius: 12px;
+  font-size: 17px;
+}
+
+/* Pushed into the background while a project modal is open. */
+.pill-button--receded,
+.pill-button--receded:hover {
+  background: var(--button-receded);
+  box-shadow: none;
+  transform: none;
+  transition-duration: 500ms;
+}
+
+.pill-button--disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.pill-button--disabled:hover {
+  background: var(--button);
+  transform: none;
+  box-shadow: none;
+}
+
+.pill-button__arrow {
+  transition: transform 160ms ease;
+}
+
+.pill-button:hover .pill-button__arrow {
+  transform: translate(2px, -2px);
+}
+
+@keyframes page-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+@media (max-width: 1100px) {
+  .page {
+    padding-top: 120px;
+  }
+}
+
+@media (max-width: 890px) {
+  .page {
+    padding-left: 24px;
+    padding-right: 24px;
+  }
+}
+
+@media (max-width: 600px) {
+  .page {
+    padding-top: 64px;
+  }
+
+  .page__main {
+    margin-top: 28px;
+  }
+
+  .section-title {
+    font-size: 26px;
+  }
+
+  .pill-button:not(.pill-button--small) {
+    font-size: 20px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .page__main {
+    animation: none;
+  }
+
+  .pill-button,
+  .pill-button:hover {
+    transition: none;
+    transform: none;
+  }
+}

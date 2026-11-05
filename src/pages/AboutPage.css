@@ -1,0 +1,76 @@
+.about {
+  font-size: 24px;
+  line-height: normal;
+}
+
+.about > * {
+  margin: 0;
+}
+
+/* One blank line between blocks, like the Figma text block. */
+.about > * + * {
+  margin-top: 1lh;
+}
+
+.about h2,
+.about h3 {
+  font-weight: 700;
+  line-height: normal;
+}
+
+.about h2 {
+  font-size: 32px;
+}
+
+.about h3 {
+  font-size: 26px;
+}
+
+/* A heading sits closer to the text it introduces. */
+.about :is(h2, h3) + * {
+  margin-top: 0.4lh;
+}
+
+.about strong {
+  font-weight: 700;
+}
+
+.about a {
+  color: inherit;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 4px;
+  transition: opacity 150ms ease;
+}
+
+.about a:hover {
+  opacity: 0.6;
+}
+
+.about ul,
+.about ol {
+  padding-left: 1.2em;
+}
+
+.about li + li {
+  margin-top: 0.25lh;
+}
+
+.about img {
+  max-width: 100%;
+  height: auto;
+}
+
+@media (max-width: 600px) {
+  .about {
+    font-size: 19px;
+  }
+
+  .about h2 {
+    font-size: 26px;
+  }
+
+  .about h3 {
+    font-size: 22px;
+  }
+}
