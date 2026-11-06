@@ -78,6 +78,7 @@ export const projects: Project[] = [
     badge: badgeTesseract,
     icon: iconAiTesseract,
     iconLabel: "AI",
+    demoUrl: "https://youtu.be/WYpaCrV-wes",
     repoUrl: "https://github.com/crkalapat/tesseract",
   },
   {
@@ -121,7 +122,8 @@ export const projects: Project[] = [
     badge: badgeSpellboard,
     icon: iconHardware,
     iconLabel: "Hardware",
-    demoUrl: "https://github.com/user-attachments/assets/92936077-01a1-442b-ba66-4622e2b436ea",
+    demoUrl:
+      "https://github.com/user-attachments/assets/92936077-01a1-442b-ba66-4622e2b436ea",
     repoUrl: "https://github.com/crkalapat/spellboard",
   },
   {
@@ -168,7 +170,8 @@ export const projects: Project[] = [
     badge: badgeSmartKnob,
     icon: iconHardware,
     iconLabel: "Hardware",
-    demoUrl: "https://github.com/user-attachments/assets/36e633b3-c66b-4fb2-a72d-89f20589ac2b",
+    demoUrl:
+      "https://github.com/user-attachments/assets/36e633b3-c66b-4fb2-a72d-89f20589ac2b",
     repoUrl: "https://github.com/crkalapat/smart-door-knob",
   },
   {
