@@ -6,6 +6,7 @@ import "./Header.css";
 const NAV: { route: Route; label: string }[] = [
   { route: "about", label: "About" },
   { route: "projects", label: "Projects" },
+  { route: "resume", label: "Resume" },
 ];
 
 export function Header({ route }: { route: Route }) {
